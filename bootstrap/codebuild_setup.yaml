@@ -1,0 +1,275 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "Create CodeBuild project with required IAM/SG/SSM/CW Logs configuration and S3/DynamoDB for Terraform"
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    -
+      Label:
+        default: "Top-level environment configuration"
+      Parameters:
+      - NameString
+    -
+      Label:
+        default: "VPC configuration for CodeBuild"
+      Parameters:
+      - VpcID
+      - PrivateSubnetIDs
+    -
+      Label:
+        default: "Proxy configuration"
+      Parameters:
+      - HttpProxyParam
+      - HttpsProxyParam
+      - NoProxyParam
+    -
+      Label:
+        default: "IAM configuration"
+      Parameters:
+      - IAMCodeBuildPoliciesARNs
+    -
+      Label:
+        default: "Git repository configuration (e.g. Bitbucket)"
+      Parameters:
+      - ConfigRepoURL
+      - GitSSHPrivateKey
+
+Parameters:
+    NameString:
+        Description: String that will be used as basis for naming S3 bucket, CB project, etc.
+        Type: String
+        Default: vpc-endpoint-services-nlb
+    VpcID:
+      Type: AWS::EC2::VPC::Id
+      Description: VPC in which CB project will run
+    PrivateSubnetIDs:
+      Type: List<AWS::EC2::Subnet::Id>
+      Description: List of subnets in which CB will run (only private are supported)
+    HttpProxyParam:
+      Description: Full string for IP or DNS name of http_proxy parameter (including http:// and optional port)
+      Type: String
+    HttpsProxyParam:
+      Description: Full string for IP or DNS name of https_proxy parameter (including http(s):// and optional port)
+      Type: String
+    NoProxyParam:
+      Description: Full string for IP(s) or DNS name(s) of no_proxy parameter (comma separated list, defaults are recommended at minimum).
+      Type: String
+      Default: 169.254.169.254,169.254.170.2,logs.eu-central-1.amazonaws.com,codecommit.eu-central-1.amazonaws.com,git-codecommit.eu-central-1.amazonaws.com,ssm.eu-central-1.amazonaws.com
+    IAMCodeBuildPoliciesARNs:
+      Description: List of IAM policy ARNs to be attached to CodeBuild role (comma separated string, no spaces)
+      Default: 'arn:aws:iam::aws:policy/AdministratorAccess'
+      Type: String
+    GitSSHPrivateKey:
+      NoEcho: 'true'
+      Description: Private SSH key to access repositories (read-only is sufficient)
+      Type: String
+    ConfigRepoURL:
+      Description: Full ssh URL to configuration repository (starting with ssh://)
+      Type: String
+
+Resources:
+####################################
+# PARAMETERS IN SSM PARAMETER STORE:
+####################################
+  HttpProxyParamParameterStore:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${NameString}/networking/http_proxy"
+      Type: "String"
+      Value: !Ref HttpProxyParam
+
+  HttpsProxyParamParameterStore:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${NameString}/networking/https_proxy"
+      Type: "String"
+      Value: !Ref HttpsProxyParam
+
+  NoProxyParamParameterStore:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${NameString}/networking/no_proxy"
+      Type: "String"
+      Value: !Ref NoProxyParam
+
+  ConfigRepoURLParameterStore:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${NameString}/gitrepo/config_repo_url"
+      Type: "String"
+      Value: !Ref ConfigRepoURL
+
+  GitSSHPrivateKeyParameterStore:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/${NameString}/gitrepo/id_rsa"
+      Type: "String"
+      Value: !Ref GitSSHPrivateKey
+
+
+####################################
+# IAM:
+####################################
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        !Split [",", !Ref IAMCodeBuildPoliciesARNs]
+
+
+####################################
+# VPC resources:
+####################################
+  CodeBuildSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcID
+      GroupDescription: CodeBuild SecurityGroup
+
+
+####################################
+# CloudWatch Logs 
+####################################
+  CodeBuildLogGroup:
+    Type: AWS::Logs::LogGroup
+
+
+####################################
+# CodeBuild:
+####################################
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref NameString
+      Description: Run Terraform that deploys NLB/VPC Endpoint Services solution
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:1.0
+        EnvironmentVariables:
+        - Name: HTTP_PROXY
+          Value: !Ref HttpProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: HTTPS_PROXY
+          Value: !Ref HttpsProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: NO_PROXY
+          Value: !Ref NoProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: http_proxy
+          Value: !Ref HttpProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: https_proxy
+          Value: !Ref HttpsProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: no_proxy
+          Value: !Ref NoProxyParamParameterStore
+          Type: PARAMETER_STORE
+        - Name: GIT_CONFIGURATION_REPO_URL 
+          Value: !Ref ConfigRepoURLParameterStore
+          Type: PARAMETER_STORE
+        - Name: GIT_SSH_KEY
+          Value: !Ref GitSSHPrivateKeyParameterStore
+          Type: PARAMETER_STORE
+        - Name: TERRAFORM_ACTION
+          Value: "create"
+          Type: PLAINTEXT
+        - Name: TERRAFORM_DELAY_SECONDS
+          Value: "10"
+          Type: PLAINTEXT
+      TimeoutInMinutes: 30
+      VpcConfig:
+        VpcId: !Ref VpcID
+        SecurityGroupIds:
+          - !Ref CodeBuildSecurityGroup
+        Subnets:
+          !Ref PrivateSubnetIDs
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Ref CodeBuildLogGroup
+      Source:
+        Type: NO_SOURCE
+        BuildSpec: !Sub |
+          version: 0.2
+          env:
+            variables:
+              GIT_SSH_COMMAND: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+              TF_STATE_BUCKET: ${TerraformStateBucket}
+              TF_LOCK_TABLE: ${TerraformLockTable}
+              TF_STATE_BUCKET_KEY: "tf/${NameString}"
+          phases:
+            install:
+              commands:
+                - echo "Installing Terraform"
+                - wget https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip
+                - unzip terraform_0.11.13_linux_amd64.zip
+                - mv terraform /bin
+                - echo "Installing other dependencies"
+                - apt update
+                - apt -y install dnsutils jq
+                - echo "Adding and converting ssh key for git repository"
+                - mkdir -p ~/.ssh/
+                - echo "$GIT_SSH_KEY" > ~/.ssh/id_rsa_source
+                - cat ~/.ssh/id_rsa_source #DEBUG
+                - if grep -q "BEGIN OPENSSH" ~/.ssh/id_rsa_source; then echo "-----BEGIN OPENSSH PRIVATE KEY-----\n`cat ~/.ssh/id_rsa_source |cut -c 37- |rev | cut -c 35- |rev |tr ' ' '\n'`\n-----END OPENSSH PRIVATE KEY-----\n" > ~/.ssh/id_rsa; else echo "-----BEGIN RSA PRIVATE KEY-----\n`cat ~/.ssh/id_rsa_source |cut -c 33- |rev | cut -c 31- |rev |tr ' ' '\n'`\n-----END RSA PRIVATE KEY-----\n" > ~/.ssh/id_rsa; fi
+                - chmod 600 ~/.ssh/id_rsa
+                - cat ~/.ssh/id_rsa #DEBUG
+            build:
+              commands:
+                - env #DEBUG
+                - echo "Cloning configuration repository"
+                - git clone $GIT_CONFIGURATION_REPO_URL terraform
+                - cd terraform
+                - terraform init -input=false -backend-config=region=$AWS_REGION -backend-config=bucket=$TF_STATE_BUCKET -backend-config=dynamodb_table=$TF_LOCK_TABLE -backend-config=key=$TF_STATE_BUCKET_KEY
+                - echo "$TERRAFORM_ACTION" > /tmp/terraform_action # workaround for bash brackets in yaml
+                - if grep -q -e "create" -e "plan" /tmp/terraform_action; then terraform plan -out=tfplan -input=false; fi
+                - if grep -q "destroy" /tmp/terraform_action; then terraform plan -destroy -out=tfplan -input=false; fi
+                - if grep -q "show" /tmp/terraform_action; then terraform show; fi
+                - if grep -q -e "create" -e "destroy" /tmp/terraform_action; then sleep $TERRAFORM_DELAY_SECONDS; fi
+                - if grep -q -e "create" -e "destroy" /tmp/terraform_action; then terraform apply -input=false tfplan; fi
+                - if ! grep -q -e "create" -e "destroy" -e "plan" -e "show" /tmp/terraform_action; then echo "Unsupported TERRAFORM_ACTION, use either create, destroy, plan or show."; fi
+
+
+####################################
+# Terraform state:
+####################################
+  TerraformStateBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: Private
+      BucketName: !Sub "tf-${AWS::AccountId}-${AWS::Region}-${NameString}"
+      VersioningConfiguration:
+        Status: Enabled
+
+  TerraformLockTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: LockID
+        AttributeType: S
+      KeySchema:
+      - AttributeName: LockID
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: !Sub "tf-state-lock-${NameString}"
+
+
+Outputs:
+  CodeBuildURL:
+    Description: URL to CodeBuild project that will run Terraform
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/codesuite/codebuild/projects/${CodeBuildProject}"
