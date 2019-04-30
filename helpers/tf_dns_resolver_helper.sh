@@ -28,7 +28,7 @@ else
     # Attempt to use locally configured DNS server:
     export DNS_SERVER_IP="$(cat /etc/resolv.conf | sed -ne 's/^nameserver //p' | head -1)"
   fi
-  IP="$(dig +short ${DNS_NAME} @${DNS_SERVER_IP})"
+  IP="$(dig +short ${DNS_NAME} @${DNS_SERVER_IP} | grep '^[.0-9]\+$')"
   if ! [[ $IP =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]];
   then
     error_exit "Error, could not resolve: ${DNS_NAME}"
