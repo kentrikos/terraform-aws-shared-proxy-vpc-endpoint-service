@@ -14,7 +14,7 @@ corresponding Route53 records on the remote accounts where VPC Endpoints are dep
 * List of targets (services) built into the module can be found in `targets.tf` file (empty by default, may be extened via custom fork).
   To overrride this list an alternate configuration can be provided with standard Terraform variable (of type: `map`) when calling the module.
   Both DNS names and plain IPs are supported.
-* Module requires `jq` and `dig` to be available (for DNS resolution of targets) 
+* Module requires `jq` and `dig` to be available (for DNS resolution of targets)
   and valid IP of DNS server configured (if empty local system default will be used)
 
 ## Usage
@@ -68,6 +68,7 @@ module "vpc-endpoint-services-nlb" {
 * Creating targets with identical DNS name where only ports are different is supported for this module but may become problematic for automatically
   provisioning Route53 entries for related VPC Endpoint (see repository: <https://github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint>).
 * For Terraform 0.12 changes in code will have to be made to accomodate new map syntax (https://www.terraform.io/docs/configuration/functions/map.html).
+* Adding features for CH-202
 
 ## Inputs
 
@@ -93,4 +94,3 @@ module "vpc-endpoint-services-nlb" {
 | target\_s3\_bucket\_key\_targets | Filename with comma-separated list of targets |
 | vpces\_base\_endpoint\_dns\_names | The DNS names for the VPC endpoint service |
 | vpces\_service\_name | Name of VPC Endpoint Service |
-
