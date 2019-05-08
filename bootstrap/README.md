@@ -10,6 +10,8 @@
 * TERRAFORM_ACTION (`create`, `destroy`, `plan` or `show` - default is `create`, `plan` will just generate plan and skip apply)
 * TERRAFORM_DELAY_SECONDS (delay before `terraform apply`, allows to read the plan - default: 10 seconds)
 
-## Notes
+## Notes/Limitations
 * parameters can be adjusted after CFN deployment via AWS Systems Manager Parameter Store
 * SSH private key is stored in SSM unencrypted as AWS CloudFormation doesn't support the SecureString parameter type (https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html)
+* this deployment configuration assumes HTTP proxy is used to provide Internet connectivity in the selected AWS account. To us it in non-limited accounts
+  you may remove HTTP proxy variables from CodeBuild configuration
