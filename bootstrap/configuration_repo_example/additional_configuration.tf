@@ -1,3 +1,5 @@
+# GENERAL CONFIGURATION, SHOULD BE ONLY CHANGED FOR INITIAL DEPLOYMENT:
+
 variable "region" {
   description = "AWS Region"
   default     = "eu-central-1"
@@ -17,17 +19,6 @@ variable "nlb_subnets" {
   type        = "list"
   description = "A list of subnet IDs to attach to the LB."
   default     = ["subnet-00000000000000000", "subnet-00000000000000000", "subnet-00000000000000000"]
-}
-
-variable "vpces_acceptance_required" {
-  description = "Whether or not VPC endpoint connection requests to the service must be accepted by the service owner"
-  default     = "true"
-}
-
-variable "vpces_allowed_principals" {
-  type        = "list"
-  description = "The ARNs of one or more principals allowed to discover the endpoint service"
-  default     = []
 }
 
 variable "dns_server_ip" {

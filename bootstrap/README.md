@@ -1,7 +1,8 @@
 # CloudFormation template to "Create CodeBuild project with required IAM/SG/SSM/CW Logs configuration and S3/DynamoDB for Terraform"
 
 ## Preparations
-* prepare configuration git repository for Terraform (example content in `configuration_repo_example`, use e.g. Bitbucket)
+* prepare configuration git repository for Terraform (example content in `configuration_repo_example`, use e.g. Bitbucket). 
+  Ensure correct version of `terraform-aws-shared-proxy-vpc-endpoint-service` module by reviewing/updating `?ref=` parameter in `main.tf`.
 * configure SSH keypair for the above repo for read-only access, pass private key as parameter when creating CloudFormation stack
 * collect HTTP proxy information (hostname:port)
 * ensure access from your VPC to the following AWS services: logs, ssm, s3 (for AWS accounts with limited connectivity: either through the proxy or create VPC Endpoints)

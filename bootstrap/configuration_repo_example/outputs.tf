@@ -1,3 +1,7 @@
+# DO NOT CHANGE THIS FILE!
+#
+# Configuration of Terraform outputs.
+
 output "vpces_service_name" {
   value = "${module.vpc-endpoint-services-nlb.vpces_service_name}"
 }
