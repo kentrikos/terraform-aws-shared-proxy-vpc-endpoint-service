@@ -1,3 +1,5 @@
+# DO NOT CHANGE THIS FILE!
+#
 # Universal TF backend configuration for the AWS account and region.
 # AWS region, bucket, S3 key must be set from commandline when running Terraform.
 

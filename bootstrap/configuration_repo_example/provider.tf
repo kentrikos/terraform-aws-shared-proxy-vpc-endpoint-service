@@ -1,4 +1,6 @@
-# AWS region must be set externally, e.g. by exporting AWS_DEFAULT_REGION env variable
+# DO NOT CHANGE THIS FILE!
+#
+# Provider configuration for Terraform.
 
 provider "aws" {
   region  = "${var.region}"
