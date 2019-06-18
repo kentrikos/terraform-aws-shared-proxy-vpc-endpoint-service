@@ -12,6 +12,8 @@ module "vpc-endpoint-services-nlb" {
   vpces_allowed_principals  = "${var.vpces_allowed_principals}"
 
   dns_server_ip = "${var.dns_server_ip}"
+  
+  targets = "${var.targets}"
 
   common_tag = "${var.common_tag}"
 }
