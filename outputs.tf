@@ -15,5 +15,5 @@ output "nlb_arn" {
 
 output "target_s3_bucket" {
   description = "ARN of S3 bucket with list of targets"
-  value       = "${aws_s3_bucket.s3_vpces.arn}"
+  value       = "${aws_s3_bucket.s3_vpces.id}"
 }
