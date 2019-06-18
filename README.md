@@ -78,7 +78,6 @@ module "vpc-endpoint-services-nlb" {
 | nlb\_name | The name of the LB. | string | n/a | yes |
 | nlb\_subnets | A list of subnet IDs to attach to the LB | list | `<list>` | no |
 | nlb\_vpc | The identifier of the VPC for NLB | string | n/a | yes |
-| targets | List of services to be used as NLB targets, can be overriden | list | `<list>` | no |
 | vpces\_acceptance\_required | Whether or not VPC endpoint connection requests to the service must be accepted by the service owner | string | `"true"` | no |
 | vpces\_allowed\_principals | The ARNs of one or more principals allowed to discover the endpoint service | list | `<list>` | no |
 
@@ -86,11 +85,8 @@ module "vpc-endpoint-services-nlb" {
 
 | Name | Description |
 |------|-------------|
-| target\_dns\_names | List of DNS names passed as targets |
-| target\_ips | List of IPs resolved from targets |
 | nlb\_arn | The ARN of the Network Load Balancer |
 | target\_s3\_bucket | ARN of S3 bucket with list of targets |
-| target\_s3\_bucket\_key\_targets | Filename with comma-separated list of targets |
 | vpces\_base\_endpoint\_dns\_names | The DNS names for the VPC endpoint service |
 | vpces\_service\_name | Name of VPC Endpoint Service |
 
