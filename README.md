@@ -67,6 +67,7 @@ module "vpc-endpoint-services-nlb" {
   to make identification easier.
 * Creating targets with identical DNS name where only ports are different is supported for this module but may become problematic for automatically
   provisioning Route53 entries for related VPC Endpoint (see repository: <https://github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint>).
+* Empty list of allowed principals may prevent Terraform from creating bucket policy.
 * For Terraform 0.12 changes in code will have to be made to accomodate new map syntax (https://www.terraform.io/docs/configuration/functions/map.html).
 
 ## Inputs
