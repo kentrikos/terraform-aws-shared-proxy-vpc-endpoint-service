@@ -6,21 +6,20 @@ This bucket will be shared with AWS accounts whitelisted for the VPC Endpoint Se
 corresponding Route53 records on the remote accounts where VPC Endpoints are deployed
 (see repository: <https://github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint>).
 
+The targets can be created with included submodule, for details please see: `modules/target/README.md`.
+The file in S3 can be created with separate Terraform code included, for details please see: 
+
 ## Preparations
 
 * The recommended way to use the module is to run Terraform from CodeBuild project.
   Complete configuration required to deploy this modul with CodeBuild can be deployed with CloudFormation template
   found in `bootstrap/codebuild_setup.yaml`
-* List of targets (services) built into the module can be found in `targets.tf` file (empty by default, may be extened via custom fork).
-  To overrride this list an alternate configuration can be provided with standard Terraform variable (of type: `map`) when calling the module.
-  Both DNS names and plain IPs are supported.
-* Module requires `jq` and `dig` to be available (for DNS resolution of targets) 
+* Targets submodule requires `jq` and `dig` to be available (for DNS resolution of targets) 
   and valid IP of DNS server configured (if empty local system default will be used)
+* Please consult submodule's README before using top-level module
 
 ## Usage
 
-### Use custom targets (recommended):
-
 ```hcl
 module "vpc-endpoint-services-nlb" {
   source = "github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint-service.git"
@@ -31,31 +30,8 @@ module "vpc-endpoint-services-nlb" {
 
   vpces_acceptance_required = "${var.vpces_acceptance_required}"
   vpces_allowed_principals  = "${var.vpces_allowed_principals}"
-
-  targets = "${var.my_targets_list}"
-
-  dns_server_ip = "${var.dns_server_ip}"
 
   common_tag = "${var.common_tag}"
-}
-```
-
-### Use built-in targets:
-
-```hcl
-module "vpc-endpoint-services-nlb" {
-  source = "github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint-service.git"
-
-  nlb_name    = "${var.nlb_name}"
-  nlb_vpc     = "${var.nlb_vpc}"
-  nlb_subnets = "${var.nlb_subnets}"
-
-  vpces_acceptance_required = "${var.vpces_acceptance_required}"
-  vpces_allowed_principals  = "${var.vpces_allowed_principals}"
-
-  dns_server_ip = "${var.dns_server_ip}"
-
-  common_tag    = "${var.common_tag}"
 }
 ```
 
@@ -75,7 +51,7 @@ module "vpc-endpoint-services-nlb" {
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | common\_tag | Single tag to be assigned to each resource (that supports tagging) created by this module | map | `<map>` | no |
-| dns\_server\_ip | IP of DNS server that will be used for resolution of targets (leave empty to attempt to use locally configured DNS server) | string | `""` | no |
+| dns\_server\_ip | For submodule usage: IP of DNS server that will be used for resolution of targets (leave empty to attempt to use locally configured DNS server) | string | `""` | no |
 | nlb\_name | The name of the LB. | string | n/a | yes |
 | nlb\_subnets | A list of subnet IDs to attach to the LB | list | `<list>` | no |
 | nlb\_vpc | The identifier of the VPC for NLB | string | n/a | yes |

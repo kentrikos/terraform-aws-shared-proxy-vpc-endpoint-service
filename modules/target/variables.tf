@@ -1,5 +1,5 @@
 variable "target_hostname" {
-  description = "Hostname of the target"
+  description = "Hostname of the target (or optionally IP)"
 }
 
 variable "target_port" {
