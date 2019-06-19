@@ -7,7 +7,7 @@ corresponding Route53 records on the remote accounts where VPC Endpoints are dep
 (see repository: <https://github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint>).
 
 The targets can be created with included submodule, for details please see: `modules/target/README.md`.
-The file in S3 can be created with separate Terraform code included, for details please see: 
+The file in S3 can be created with separate Terraform code included, for details please see: `bootstrap/configuration_repo_example/main.tf`.
 
 ## Preparations
 
