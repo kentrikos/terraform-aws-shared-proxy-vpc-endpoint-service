@@ -22,6 +22,7 @@ module "target_unique_id" {
    nlb_arn    = "${module.vpc-endpoint-services-nlb.nlb_arn}"
 
    common_tag = "${var.common_tag}"
+}
 ```
 ## Inputs
 
