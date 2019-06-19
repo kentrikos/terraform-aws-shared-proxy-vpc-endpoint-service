@@ -22,7 +22,7 @@ variable "nlb_subnets" {
 }
 
 variable "dns_server_ip" {
-  description = "IP of DNS server that will be used for resolution of targets (leave empty to attempt to use locally configured DNS server)"
+  description = "For submodule usage: IP of DNS server that will be used for resolution of targets (leave empty to attempt to use locally configured DNS server)"
   default     = ""
 }
 

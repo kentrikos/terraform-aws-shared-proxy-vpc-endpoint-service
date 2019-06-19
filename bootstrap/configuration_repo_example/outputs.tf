@@ -17,7 +17,3 @@ output "nlb_arn" {
 output "target_s3_bucket" {
   value = "${module.vpc-endpoint-services-nlb.target_s3_bucket}"
 }
-
-output "target_s3_bucket_key_targets" {
-  value = "${module.vpc-endpoint-services-nlb.target_s3_bucket_key_targets}"
-}
