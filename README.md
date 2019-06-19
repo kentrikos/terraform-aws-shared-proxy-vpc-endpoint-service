@@ -6,16 +6,16 @@ This bucket will be shared with AWS accounts whitelisted for the VPC Endpoint Se
 corresponding Route53 records on the remote accounts where VPC Endpoints are deployed
 (see repository: <https://github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint>).
 
-The targets can be created with included submodule, for details please see: (modules/target/README.md).
-The file in S3 can be created with separate Terraform code included, for details please see: (bootstrap/configuration_repo_example/main.tf).
+The targets can be created with included submodule, for details please see: [modules/target/README.md](modules/target/README.md).
+The file in S3 can be created with separate Terraform code included, for details please see: [bootstrap/configuration_repo_example/main.tf](bootstrap/configuration_repo_example/main.tf).
 
-The complete, sample configuration can be found in: (bootstrap/configuration_repo_example/).
+The complete, sample configuration can be found in: [bootstrap/configuration_repo_example/](bootstrap/configuration_repo_example/).
 
 ## Preparations
 
 * The recommended way to use the module is to run Terraform from CodeBuild project.
   Complete configuration required to deploy this modul with CodeBuild can be deployed with CloudFormation template
-  found in (bootstrap/codebuild_setup.yaml)
+  found in [bootstrap/codebuild_setup.yaml](bootstrap/codebuild_setup.yaml)
 * Targets submodule requires `jq` and `dig` to be available (for DNS resolution of targets) 
   and valid IP of DNS server configured (if empty local system default will be used)
 * Please consult submodule's README before using top-level module
