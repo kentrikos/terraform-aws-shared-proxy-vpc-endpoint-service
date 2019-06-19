@@ -49,6 +49,10 @@ module "target_sample_host_sample_domain" {
 
   common_tag = "${var.common_tag}"
 }
+
+module "target_sample_host_2_sample_domain_2" {
+[...]
+}
 ```
 
 ## Notes
