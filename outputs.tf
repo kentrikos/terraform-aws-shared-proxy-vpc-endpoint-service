@@ -15,20 +15,5 @@ output "nlb_arn" {
 
 output "target_s3_bucket" {
   description = "ARN of S3 bucket with list of targets"
-  value       = "${aws_s3_bucket.s3_vpces.arn}"
-}
-
-output "target_s3_bucket_key_targets" {
-  description = "Filename with comma-separated list of targets"
-  value       = "${aws_s3_bucket_object.targets.key}"
-}
-
-output "target_dns_names" {
-  description = "List of DNS names passed as targets"
-  value       = "${data.external.dns_resolver.*.query.dns_name}"
-}
-
-output "target_ips" {
-  description = "List of IPs resolved from targets"
-  value       = "${data.external.dns_resolver.*.result.ip}"
+  value       = "${aws_s3_bucket.s3_vpces.id}"
 }
