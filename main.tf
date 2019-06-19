@@ -1,4 +1,4 @@
-# FIXME: map function will be deprecated in TF 0.12 (https://www.terraform.io/docs/configuration/functions/map.html)
+# FIXME: map function is deprecated and will be removed in future versions of TF (https://www.terraform.io/docs/configuration/functions/map.html)
 
 locals {
   common_tag = "${map(
