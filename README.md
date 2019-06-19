@@ -35,6 +35,20 @@ module "vpc-endpoint-services-nlb" {
 
   common_tag = "${var.common_tag}"
 }
+
+module "target_sample_host_sample_domain" {
+  source = "github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint-service.git//modules/target"
+
+  target_hostname   = "sample_host.sample_domain"
+  target_port       = "443"
+  nlb_listener_port = "7443"
+
+  nlb_tg_vpc    = "${var.nlb_vpc}"
+  nlb_arn       = "${module.vpc-endpoint-services-nlb.nlb_arn}"
+  dns_server_ip = "${var.dns_server_ip}"
+
+  common_tag = "${var.common_tag}"
+}
 ```
 
 ## Notes
