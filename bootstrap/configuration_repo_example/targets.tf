@@ -53,7 +53,7 @@ locals {
 # }
 
 module "target_sample_host_sample_domain" {
-  source = "github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint-service.git//modules/target?ref=1.0.0"
+  source = "github.com/kentrikos/terraform-aws-shared-proxy-vpc-endpoint-service.git//modules/target?ref=master"
 
   target_hostname   = "sample_host.sample_domain"
   target_port       = "443"
