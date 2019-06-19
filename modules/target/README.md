@@ -2,7 +2,7 @@
 
 This submodule should be used to create targets for VPC Endpoint Service solution.
 It was implemented to workaround `count` feature in Terraform that triggers unnecessary recreation of resources
-when modyfing list variable that is used to create multiple resources.
+when modifing list variable that is used to create multiple resources.
 
 ## Notes:
 * this submodule requires `jq` and `dig` to be available (for DNS resolution of targets)
