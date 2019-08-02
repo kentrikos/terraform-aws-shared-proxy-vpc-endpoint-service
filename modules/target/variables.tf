@@ -24,11 +24,31 @@ variable "dns_server_ip" {
 }
 
 variable "common_tag" {
-  type        = "map"
+  type        = map(string)
   description = "Single tag to be assigned to each resource (that supports tagging) created by this module"
 
   default = {
     "key"   = "environment"
     "value" = "dev"
   }
+}
+
+variable "enable_nacl" {
+  type    = bool
+  default = false
+}
+
+variable "nacl_id" {
+  type    = string
+  default = ""
+}
+
+variable "nacl_rule_number" {
+  type    = string
+  default = ""
+}
+
+variable "nacl_rule_cidr" {
+  type    = string
+  default = ""
 }

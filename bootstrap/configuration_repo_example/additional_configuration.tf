@@ -16,7 +16,7 @@ variable "nlb_vpc" {
 }
 
 variable "nlb_subnets" {
-  type        = "list"
+  type        = list(string)
   description = "A list of subnet IDs to attach to the LB."
   default     = ["subnet-00000000000000000", "subnet-00000000000000000", "subnet-00000000000000000"]
 }
@@ -27,7 +27,7 @@ variable "dns_server_ip" {
 }
 
 variable "common_tag" {
-  type        = "map"
+  type        = map(string)
   description = "Single tag to be assigned to each resource (that supports tagging) created by this module"
 
   default = {

@@ -7,7 +7,7 @@ variable "nlb_vpc" {
 }
 
 variable "nlb_subnets" {
-  type        = "list"
+  type        = list(string)
   description = "A list of subnet IDs to attach to the LB"
   default     = []
 }
@@ -18,7 +18,7 @@ variable "vpces_acceptance_required" {
 }
 
 variable "vpces_allowed_principals" {
-  type        = "list"
+  type        = list(string)
   description = "The ARNs of one or more principals allowed to discover the endpoint service"
   default     = []
 }
@@ -29,11 +29,16 @@ variable "dns_server_ip" {
 }
 
 variable "common_tag" {
-  type        = "map"
+  type        = map(string)
   description = "Single tag to be assigned to each resource (that supports tagging) created by this module"
 
   default = {
     "key"   = "environment"
     "value" = "dev"
   }
+}
+
+variable "enable_nacl" {
+  type    = bool
+  default = false
 }
