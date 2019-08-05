@@ -95,6 +95,6 @@ resource "aws_network_acl" "nacl" {
     rule_no  = 999
 
     from_port = 0
-    to_port   = 65535
+    to_port   = 0
   }
 }
