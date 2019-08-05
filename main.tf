@@ -89,4 +89,12 @@ resource "aws_network_acl" "nacl" {
   count      = var.enable_nacl ? 1 : 0
   vpc_id     = var.nlb_vpc
   subnet_ids = var.nlb_subnets
+  egress {
+    action   = "allow"
+    protocol = "all"
+    rule_no  = 999
+
+    from_port = 0
+    to_port   = 65535
+  }
 }
