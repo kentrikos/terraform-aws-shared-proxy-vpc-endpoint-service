@@ -1,14 +1,14 @@
-variable "target_hostname" {
-  description = "Hostname of the target (or optionally IP)"
-}
+# variable "target_hostname" {
+#   description = "Hostname of the target (or optionally IP)"
+# }
 
-variable "target_port" {
-  description = "TCP port number of the target"
-}
+# variable "target_port" {
+#   description = "TCP port number of the target"
+# }
 
-variable "nlb_listener_port" {
-  description = "TCP port number to be used on NLB listener for this target"
-}
+# variable "nlb_listener_port" {
+#   description = "TCP port number to be used on NLB listener for this target"
+# }
 
 variable "nlb_arn" {
   description = "The arn of existing NLB to be used"
