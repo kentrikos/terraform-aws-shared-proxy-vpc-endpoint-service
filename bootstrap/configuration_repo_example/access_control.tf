@@ -6,7 +6,7 @@ variable "vpces_acceptance_required" {
 }
 
 variable "vpces_allowed_principals" {
-  type        = "list"
+  type        = list(string)
   description = "The ARNs of one or more principals allowed to discover the endpoint service"
   default     = []
 }
